@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import './index.css'
+import { useEffect, useState } from "react";
+import "./index.css";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -50,7 +50,7 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const key = "1a34f71f"
+const key = "1a34f71f";
 export default function App() {
   // const [movies, setMovies] = useState([]);
   // useEffect(()=>{
@@ -62,65 +62,106 @@ export default function App() {
   // } , [])
 
   //async await
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  let movie = 'shutter';
-  useEffect(()=>{
+  const [selectedMovieID, setSelectedMovieID] = useState();
+
+  function handleMovieSelectedDetails(movie) {
+    setSelectedMovieID([movie.Title, movie.imdbID, movie.Year]);
+  }
+
+  useEffect(function () {
+    console.log("A");
+  }, []);
+  useEffect(function () {
+    console.log("B");
+  });
+  console.log("C");
+
+  useEffect(() => {
     // setLoading(false)
-    async function Movie(){
-      try{
-        setLoading(true)
-        const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&s=${movie}`);
+    async function Movie() {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://www.omdbapi.com/?apikey=${key}&s=${query}`
+        );
         if (!res.ok) throw new Error("something went wrong");
         const data = await res.json();
+        // console.log(data)
+        if (data.Response === "False") throw new Error("Movie not found!");
+
+        console.log(data.Search);
         setMovies(data.Search);
-        console.log(data.Search)
-        setLoading(false)
+      } catch (err) {
+        // setError(err.message);
+      } finally {
+        setLoading(false);
       }
-      catch (err){
-        setError(err.message)
-      }
+      console.log(query);
     }
     Movie();
-  } , [])
+  }, [query]);
 
+  // close tab
+  function handleCloseTab() {
+    setSelectedMovieID(false);
+  }
   return (
     <>
-      <NavBar movies={movies}>
+      <NavBar movies={movies} query={query} setQuery={setQuery}>
         <Results movies={movies} />
       </NavBar>
-      <Main>
+      <Main handleMovieSelectedDetails={handleMovieSelectedDetails}>
         <MovieSearchResults>
-          {error && <ErrorNet error={error}/> }
-          {!loading && !error && <MovieList movies={movies}/> }
-          {loading && <Loader/>}
+          {error && <ErrorNet error={error} />}
+          {!loading && !error && (
+            <MovieList
+              movies={movies}
+              handleMovieSelectedDetails={handleMovieSelectedDetails}
+            />
+          )}
+          {loading && <Loader />}
         </MovieSearchResults>
-        <MovieYourWatchedInformation />
+        {selectedMovieID ? (
+          <MovieSelected
+            selectedMovieID={selectedMovieID}
+            handleCloseTab={handleCloseTab}
+            handleMovieSelectedDetails={handleMovieSelectedDetails}
+          />
+        ) : (
+          <MovieYourWatchedInformation />
+        )}
       </Main>
     </>
   );
 }
 
 //loading
-function Loader(){
-  return <div className="flex justify-center items-center gap-4 h-full">
-    <p className="text-4xl">Loading</p>
-    <i className="fa text-4xl fa-spinner fa-spin"></i>
-  </div>
+function Loader() {
+  return (
+    <div className="flex justify-center items-center gap-4 h-full">
+      <p className="text-4xl">Loading</p>
+      <i className="fa text-4xl fa-spinner fa-spin"></i>
+    </div>
+  );
 }
 // error network
-function ErrorNet({error}){
-  return <div className="flex justify-center items-center">
-    <div className="text-4xl text-red-400 mt-4">Please Check Network 😢</div>
-  </div>
+function ErrorNet({ error }) {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="text-4xl text-red-400 mt-4">Please Check Network 😢</div>
+    </div>
+  );
 }
 // navigator
-function NavBar({ children }) {
+function NavBar({ children, query, setQuery }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <SearchBar />
+      <SearchBar query={query} setQuery={setQuery} />
       {children}
     </nav>
   );
@@ -136,8 +177,7 @@ function Logo() {
 }
 
 // searchbar
-function SearchBar() {
-  const [query, setQuery] = useState("");
+function SearchBar({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -153,13 +193,18 @@ function SearchBar() {
 function Results({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      {/* Found <strong>{movies.length}</strong> results */}
     </p>
   );
 }
 // main
-function Main({ children }) {
-  return <main className="main">{children}</main>;
+function Main({ children, handleMovieSelectedDetails }) {
+  return (
+    <>
+      <main className="main">{children}</main>
+      <div>{handleMovieSelectedDetails.Title}</div>
+    </>
+  );
 }
 
 // MovieSearchResults
@@ -180,11 +225,15 @@ function MovieSearchResults({ children }) {
 }
 
 // MovieList
-function MovieList({ movies }) {
+function MovieList({ movies, handleMovieSelectedDetails }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <li key={movie.imdbID}>
+        <li
+          onClick={() => handleMovieSelectedDetails(movie)}
+          className="list-element"
+          key={movie.imdbID}
+        >
           <img src={movie.Poster} alt={`${movie.Title} poster`} />
           <h3>{movie.Title}</h3>
           <div>
@@ -213,6 +262,62 @@ function MovieYourWatchedInformation() {
       </button>
       {isOpen2 && <MovieWatchedList />}
     </div>
+  );
+}
+
+function MovieSelected({
+  selectedMovieID,
+  handleCloseTab,
+  handleMovieSelectedDetails,
+}) {
+  return (
+    <>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            width: "300px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
+          <div
+            onClick={() => handleCloseTab()}
+            style={{
+              cursor: "pointer",
+              width: "25px",
+              height: "25px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "15px",
+              fontSize: "1.5rem",
+              borderRadius: "50%",
+              backgroundColor: "red",
+            }}
+          >
+            x
+          </div>
+          {/* <img
+            width="100px"
+            height="100px"
+            src={handleMovieSelectedDetails.Poster}
+            alt={handleMovieSelectedDetails.Title}
+          />
+          <div>{handleMovieSelectedDetails.Title}</div>
+          <div>{handleMovieSelectedDetails.Year}</div> */}
+        </div>
+        <div
+          style={{
+            paddingTop: "30px",
+            fontSize: "1.5rem",
+            backgroundColor: "gray",
+          }}
+        >
+          {selectedMovieID}
+        </div>
+      </div>
+    </>
   );
 }
 // movieWatchedList

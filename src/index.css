@@ -54,7 +54,7 @@ body {
   max-width: 42rem;
   background-color: var(--color-background-500);
   border-radius: 0.9rem;
-   overflow: scroll;
+  overflow: scroll;
   position: relative;
 }
 
@@ -139,6 +139,11 @@ body {
   list-style: none;
   padding: 0.8rem 0;
   /* overflow: scroll; */
+}
+.list-element:hover {
+  cursor: pointer;
+  background-color: rgba(99, 99, 99, 0.2);
+  transition: all 0.1s ease-in;
 }
 
 .list-watched {
