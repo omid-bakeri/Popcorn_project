@@ -1,3 +1,21 @@
+/*body {*/
+/*  margin: 0;*/
+/*  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",*/
+/*    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",*/
+/*    sans-serif;*/
+/*  -webkit-font-smoothing: antialiased;*/
+/*  -moz-osx-font-smoothing: grayscale;*/
+/*}*/
+
+/*code {*/
+/*  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",*/
+/*    monospace;*/
+/*}*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --color-primary: #6741d9;
   --color-primary-light: #7950f2;
@@ -54,7 +72,7 @@ body {
   max-width: 42rem;
   background-color: var(--color-background-500);
   border-radius: 0.9rem;
-  overflow: scroll;
+  /*overflow: scroll;*/
   position: relative;
 }
 
@@ -385,6 +403,20 @@ EMPTY STAR
 
 */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.movieTitle {
+  text-align: left;
+  padding-top: 20px;
+  font-size: 2.5rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-weight: bold;
+  color: rgb(207, 207, 207);
+}
+.movieDetailsClass {
+  font-size: 1.6rem;
+  color: rgb(151, 151, 151);
+}
+.movieDetailsClassData{
+  font-size: 1.7rem;
+  font-weight: bold;
+  
+}

@@ -51,7 +51,7 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const key = "1a34f71f";
-export default function App() {
+export default function AppComponent() {
   // const [movies, setMovies] = useState([]);
   // useEffect(()=>{
   //   fetch(`https://www.omdbapi.com/?apikey=${key}&s=interstellar`)
@@ -68,17 +68,20 @@ export default function App() {
   const [error, setError] = useState("");
   const [selectedMovieID, setSelectedMovieID] = useState();
 
-  function handleMovieSelectedDetails(movie) {
-    setSelectedMovieID([movie.Title, movie.imdbID, movie.Year]);
+  let rand = Math.floor(Math.random() * 5) + 1;
+  console.log(rand);
+  function handleMovieSelectedDetails(id) {
+    setSelectedMovieID(id);
+    // console.log("id : " , movie);
   }
 
-  useEffect(function () {
-    console.log("A");
-  }, []);
-  useEffect(function () {
-    console.log("B");
-  });
-  console.log("C");
+  // useEffect(function () {
+  //     console.log("A");
+  // }, []);
+  // useEffect(function () {
+  //     console.log("B");
+  // });
+  // console.log("C");
 
   useEffect(() => {
     // setLoading(false)
@@ -93,14 +96,14 @@ export default function App() {
         // console.log(data)
         if (data.Response === "False") throw new Error("Movie not found!");
 
-        console.log(data.Search);
+        // console.log(data.Search);
         setMovies(data.Search);
       } catch (err) {
         // setError(err.message);
       } finally {
         setLoading(false);
       }
-      console.log(query);
+      // console.log(query);
     }
     Movie();
   }, [query]);
@@ -193,7 +196,7 @@ function SearchBar({ query, setQuery }) {
 function Results({ movies }) {
   return (
     <p className="num-results">
-      {/* Found <strong>{movies.length}</strong> results */}
+      Found <strong>{movies.length}</strong> results
     </p>
   );
 }
@@ -230,7 +233,7 @@ function MovieList({ movies, handleMovieSelectedDetails }) {
     <ul className="list">
       {movies?.map((movie) => (
         <li
-          onClick={() => handleMovieSelectedDetails(movie)}
+          onClick={() => handleMovieSelectedDetails(movie.imdbID)}
           className="list-element"
           key={movie.imdbID}
         >
@@ -240,7 +243,7 @@ function MovieList({ movies, handleMovieSelectedDetails }) {
             <p>
               <span>🗓</span>
               <span>{movie.Year}</span>
-              {console.log(movies.length)}
+              {/*{console.log(movies.length)}*/}
             </p>
           </div>
         </li>
@@ -293,28 +296,214 @@ function MovieSelected({
               padding: "15px",
               fontSize: "1.5rem",
               borderRadius: "50%",
-              backgroundColor: "red",
+              marginTop: "10px",
+              marginLeft: "10px",
+              backgroundColor: "gray",
+              userSelect: "none",
+              position: "absolute",
+              zIndex: "10",
             }}
           >
             x
           </div>
-          {/* <img
-            width="100px"
-            height="100px"
-            src={handleMovieSelectedDetails.Poster}
-            alt={handleMovieSelectedDetails.Title}
-          />
-          <div>{handleMovieSelectedDetails.Title}</div>
-          <div>{handleMovieSelectedDetails.Year}</div> */}
         </div>
         <div
           style={{
             paddingTop: "30px",
             fontSize: "1.5rem",
-            backgroundColor: "gray",
+            backgroundColor: "black",
+            // marginTop: "30px",
+            position: "relative",
+            padding: "35px",
+            borderRadius: "7px",
+            overflow: "scroll",
+            overflowX: "hidden",
+            maxWidth: "500px",
           }}
         >
-          {selectedMovieID}
+          <MovieDetails
+            selectedMovieID={selectedMovieID}
+            handleMovieSelectedDetails={handleMovieSelectedDetails}
+          />
+          {/* {selectedMovieID} */}
+        </div>
+      </div>
+    </>
+  );
+}
+//movieDetails
+function MovieDetails({ selectedMovieID, handleMovieSelectedDetails }) {
+  // {console.log("id=" , selectedMovieID)}
+  console.log(selectedMovieID);
+  const [movieDetails, setMovieDetails] = useState({});
+
+  const {
+    Title: Title,
+    Actors: Actors,
+    Awards: Awards,
+    BoxOffice: BoxOffice,
+    Country: Country,
+    DVD: DVD,
+    Director: Director,
+    Genre: Genre,
+    Language: Language,
+    Plot: Plot,
+    Poster: Poster,
+    Released: Released,
+    Runtime: Runtime,
+    Year: Year,
+    imdbRating: imdbRating,
+  } = movieDetails;
+
+  console.log(movieDetails);
+
+  // console.log(Title , Year);
+  useEffect(
+    function ApiDetails() {
+      async function ApiDetailsFunction() {
+        const fetchDetails = await fetch(
+          `https://www.omdbapi.com/?apikey=${key}&i=${selectedMovieID}`
+        );
+
+        console.log("------------------------------------");
+        const res = await fetchDetails.json();
+        // console.log(res);
+        setMovieDetails(res);
+      }
+      ApiDetailsFunction();
+    },
+    [selectedMovieID]
+  );
+
+  return (
+    <>
+      <img
+        style={{ objectFit: "cover", margin: "0 auto" }}
+        src={Poster}
+        alt={Title}
+      />
+      <div className="movieTitle">{Title}</div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <div
+          style={{ color: "yellow", fontWeight: "medium", fontSize: "2.1rem" }}
+        >
+          {Year}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            userSelect: "none",
+            padding: "5px",
+            borderRadius: "10px",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <button style={{ fontWeight: "medium", fontSize: "1.8rem" }}>
+            {imdbRating}
+          </button>
+          <span style={{ fontSize: "1.8rem" }}>⭐</span>
+        </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+          {/*<div className="fa fa-man"></div>*/}
+        <div className="movieDetailsClass">Actors</div>
+        <div className="movieDetailsClassData">: {Actors}</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+          {/*<i className="fa fa-time"></i>*/}
+        <div className="movieDetailsClass">Time</div>
+        <div className="movieDetailsClassData">: {Runtime}</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div className="movieDetailsClass">Genre</div>
+        <div className="movieDetailsClassData">: {Genre}</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div className="movieDetailsClass">Director</div>
+        <div className="movieDetailsClassData">: {Director}</div>
+      </div>
+      {/* <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div className="movieDetailsClass">Language</div>
+        <div className="movieDetailsClassData">: {Language}</div>
+      </div> */}
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div className="movieDetailsClass">Released</div>
+        <div className="movieDetailsClassData">: {Released}</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div className="movieDetailsClass">Country</div>
+        <div className="movieDetailsClassData">: {Country}</div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          //   alignItems: "center",
+          paddingTop: "7px",
+        }}
+      >
+        <div
+          style={{ maxWidth: "400px", paddingTop: "30px" }}
+          className="movieDetailsClassData"
+        >
+          {Plot}
         </div>
       </div>
     </>
