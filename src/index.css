@@ -155,7 +155,7 @@ body {
 
 .list {
   list-style: none;
-  padding: 0.8rem 0;
+  /* padding: 0.8rem 0; */
   /* overflow: scroll; */
 }
 .list-element:hover {
@@ -191,7 +191,9 @@ body {
 }
 
 .list img {
-  width: 100%;
+  /* width: 100%; */
+  width: 70px;
+  margin-left: 10px;
   grid-row: 1 / -1;
 }
 
@@ -415,8 +417,85 @@ EMPTY STAR
   font-size: 1.6rem;
   color: rgb(151, 151, 151);
 }
-.movieDetailsClassData{
+.movieDetailsClassData {
   font-size: 1.7rem;
   font-weight: bold;
-  
+}
+
+.btn-favorite {
+  display: block;
+  padding: 10px;
+  margin-top: 30px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: rgb(190, 132, 6);
+  width: 100%;
+  user-select: none;
+}
+.btn-favorite:hover {
+  cursor: pointer;
+  background-color: rgb(179, 124, 5);
+  transition: all 0.4s ease-in-out;
+}
+.btn-favorite:active,
+.btn-favorite:focus {
+  margin-top: 35px;
+}
+
+.closeMovie {
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+  padding: 11px;
+  background-color: #aaaaaa;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.closeMovie:hover {
+  cursor: pointer;
+  background-color: #e03131;
+  opacity: 70%;
+  transition: 0.4s ease;
+}
+.img-close-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #202020;
+}
+.img-close-btn:hover{
+  cursor: pointer;
+  background-color: #313131;
+  transition: 0.5s ease;
+  color: white;
+}
+.title_movie_favorite {
+  color: white;
+  display: flex;
+  /* justify-content: center; */
+  padding: 0;
+  align-items: flex-start;
+  font-size: 1.6rem;
+  /* background-color: #6741d9; */
+  width: 100%;
+  /* padding: 3px; */
+  display: block;
+  padding-top: 10px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+.root-movie-favorite{
+  /* background-color: #0b539b; */
+  padding: 2px;
+}
+.favorite-title-movie{
+  font-size: 1.5rem;
+  user-select: none;
+  padding: 10px;
+  font-weight: 600;
 }
