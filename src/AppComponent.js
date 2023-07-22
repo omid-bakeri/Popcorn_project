@@ -1,66 +1,12 @@
+/* eslint-disable no-undef */
 import { useEffect, useState } from "react";
 import "./index.css";
-const tempMovieData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-];
-
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const key = "1a34f71f";
 export default function AppComponent() {
-  // const [movies, setMovies] = useState([]);
-  // useEffect(()=>{
-  //   fetch(`https://www.omdbapi.com/?apikey=${key}&s=interstellar`)
-  //       .then((res)=>res.json()).then((data)=>{
-  //     console.log(data.Search);
-  //     setMovies(data.Search)
-  //   })
-  // } , [])
-
   //async await
   const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("");
@@ -79,8 +25,16 @@ export default function AppComponent() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
-    console.log(watched);
-    // console.log(watched[0].Title);
+    alert(`${movie.Title} Added To Your Favorite Movie`);
+    // watched.map(item => {if(item.imdbID === movie.imdbID){
+    //   console.log("This film Already Added to Favorite List");}
+    // })
+    // console.log(watched);
+  }
+
+  function OnDeleteMovie(id) {
+    console.log(id);
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
   useEffect(() => {
@@ -120,6 +74,7 @@ export default function AppComponent() {
       <Main
         handleMovieSelectedDetails={handleMovieSelectedDetails}
         handleAddWatched={handleAddWatched}
+        OnDeleteMovie={OnDeleteMovie}
       >
         <MovieSearchResults>
           {error && <ErrorNet error={error} />}
@@ -139,7 +94,10 @@ export default function AppComponent() {
             handleMovieSelectedDetails={handleMovieSelectedDetails}
           />
         ) : (
-          <MovieYourWatchedInformation handleAddWatched={watched} />
+          <MovieYourWatchedInformation
+            handleAddWatched={watched}
+            OnDeleteMovie={OnDeleteMovie}
+          />
         )}
       </Main>
     </>
@@ -205,7 +163,12 @@ function Results({ movies }) {
   );
 }
 // main
-function Main({ children, handleMovieSelectedDetails, OnFavoriteMovie }) {
+function Main({
+  children,
+  handleMovieSelectedDetails,
+  OnFavoriteMovie,
+  handleDeleteWatchedMovie,
+}) {
   return (
     <>
       <main className="main">{children}</main>
@@ -232,7 +195,12 @@ function MovieSearchResults({ children }) {
 }
 
 // MovieList
-function MovieList({ movies, handleMovieSelectedDetails, handleAddWatched }) {
+function MovieList({
+  movies,
+  handleMovieSelectedDetails,
+  handleAddWatched,
+  handleDeleteWatchedMovie,
+}) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
@@ -257,7 +225,7 @@ function MovieList({ movies, handleMovieSelectedDetails, handleAddWatched }) {
 }
 
 // movie you watched information
-function MovieYourWatchedInformation(handleAddWatched) {
+function MovieYourWatchedInformation(handleAddWatched, OnDeleteMovie) {
   const [isOpen2, setIsOpen2] = useState(true);
   return (
     <div className="box overflow-x-hidden">
@@ -267,7 +235,12 @@ function MovieYourWatchedInformation(handleAddWatched) {
       >
         {isOpen2 ? "–" : "+"}
       </button>
-      {isOpen2 && <MovieWatchedList handleAddWatched={handleAddWatched} />}
+      {isOpen2 && (
+        <MovieWatchedList
+          handleAddWatched={handleAddWatched}
+          OnDeleteMovie={OnDeleteMovie}
+        />
+      )}
     </div>
   );
 }
@@ -342,6 +315,7 @@ function MovieDetails({
   selectedMovieID,
   handleMovieSelectedDetails,
   handleAddWatched,
+  handleDeleteWatchedMovie,
 }) {
   // {console.log("id=" , selectedMovieID)}
   // console.log(selectedMovieID);
@@ -436,7 +410,6 @@ function MovieDetails({
         style={{
           display: "flex",
           justifyContent: "start",
-          //   alignItems: "center",
           paddingTop: "7px",
         }}
       >
@@ -478,17 +451,6 @@ function MovieDetails({
         <div className="movieDetailsClass">Director</div>
         <div className="movieDetailsClassData">: {Director}</div>
       </div>
-      {/* <div
-        style={{
-          display: "flex",
-          justifyContent: "start",
-          //   alignItems: "center",
-          paddingTop: "7px",
-        }}
-      >
-        <div className="movieDetailsClass">Language</div>
-        <div className="movieDetailsClassData">: {Language}</div>
-      </div> */}
 
       <div
         style={{
@@ -534,47 +496,24 @@ function MovieDetails({
   );
 }
 // movieWatchedList
-function MovieWatchedList({ handleAddWatched }) {
-  // console.log("*/*/*/*/*/*/*/*/*/*/*/*/*/*");
-  // console.log(handleAddWatched.handleAddWatched.at(0).Title);
-  // console.log("*/*/*/*/*/*/*/*/*/*/*/*/*/*");
+function MovieWatchedList({ handleAddWatched, OnDeleteMovie }) {
   let Favorite_label = [];
   Favorite_label = handleAddWatched.handleAddWatched;
 
-  // const [fav, setFav] = useState([]);
-  // setFav(handleAddWatched);
-
-  // const {
-  //   Title: Title,
-  //   Actors: Actors,
-  //   Awards: Awards,
-  //   BoxOffice: BoxOffice,
-  //   Country: Country,
-  //   DVD: DVD,
-  //   Director: Director,
-  //   Genre: Genre,
-  //   Language: Language,
-  //   Plot: Plot,
-  //   Poster: Poster,
-  //   Released: Released,
-  //   Runtime: Runtime,
-  //   Year: Year,
-  //   imdbRating: imdbRating,
-  // } = watched;
-
-  // console.log("-*-*-*-*-*-*-*-*-*-*-*-");
-  // console.log(OnFavoriteMovie.Title);
-  // function handleDataFavoriteMovie() {
-  //   setWatched(OnFavoriteMovie);
-  //  }
-
-  // const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  // const avgUserRating = average(watched.map((movie) => movie.userRating));
-  // const avgRuntime = average(watched.map((movie) => movie.runtime));
   return (
     <>
       <ul className="list">
-        <div className="favorite-title-movie">Your Favorite Movies</div>
+        <div
+          className=""
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <div className="favorite-title-movie">Your Favorite Movies</div>
+          <div style={{ fontSize : "1.6rem"}}>{Favorite_label.length}</div>
+        </div>
         {Favorite_label.map((movie) => (
           <div className="img-close-btn" style={{ padding: "4px" }}>
             <div>
@@ -619,7 +558,13 @@ function MovieWatchedList({ handleAddWatched }) {
                 </div>
               </div>
             </div>
-            <p class="closeMovie">x</p>
+            {/* {console.log(movie.imdbID)} */}
+            <p
+              // onClick={()=>OnDeleteMovie(movie.imdbID)}
+              class="closeMovie"
+            >
+              x
+            </p>
           </div>
         ))}
       </ul>
